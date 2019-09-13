@@ -5,7 +5,8 @@ This is intended to be a portable version of GISTIC2 that can be run on any syst
 ## Getting Started
 
 In theory, the only configuration required is to choose the appropriate config file matching the reference genome used in generating segmented copy number. 
-cp config_hg38.yaml config.yaml
+
+```cp config_hg38.yaml config.yaml```
 
 ### Prerequisites
 
@@ -15,3 +16,10 @@ You will need to have a working installation of Singularity and Snakemake on the
 snakemake --use-singularity
 ```
 
+### Reference files and Outputs
+
+The intermediate files needed for GISTIC to run are either provided in this repository or (for larger files) pulled from a remote server and are stored in the reference directory. The outputs from pre-processing and GISTIC are written to the gistic_out directory. 
+
+### Optional
+
+The singularity container is derived directly from the genepattern/docker-gistic container. The dockerfile detailing its configuration is included here along with the Singularity definition file. The latter was modified to allow the external libraries used by Matlab to be available. If you are so inclined, you may choose to rebuild these with different configurations. 
