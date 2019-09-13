@@ -24,11 +24,11 @@ rule getreference:
 
 rule igv2gistic:
     input:
-        "data/MCL_genomes.sequenza.filtered.igv.seg",
+        "data/genomes.sequenza.filtered.igv.seg",
 	"reference/af-only-gnomad.vcf.gz"
     output:
-        f"{GISTIC_1}""MCL_genomes.gistic.seg",
-        f"{GISTIC_1}""MCL_genomes.markers.tsv"
+        f"{GISTIC_1}""genomes.gistic.seg",
+        f"{GISTIC_1}""genomes.markers.tsv"
     log:
         "logs/local/igv2gistic/igv2gistc.txt"
     params:

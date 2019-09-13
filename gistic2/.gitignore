@@ -1,4 +1,3 @@
-data
 .snakemake
 Singularity.gistic2
 gistic_out
