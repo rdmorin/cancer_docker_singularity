@@ -4,9 +4,15 @@ This is intended to be a portable version of GISTIC2 that can be run on any syst
 
 ## Getting Started
 
-In theory, the only configuration required is to choose the appropriate config file matching the reference genome used in generating segmented copy number. 
+In theory, the only configuration required is to choose the appropriate config file matching the reference genome used in generating segmented copy number. Edit the second line of config.yaml to refer to your own input file or leave it unmodified to run the pipeline using the test data. 
 
 ```cp config_hg38.yaml config.yaml```
+
+### Inputs
+
+This workflow requires a concatenated segment file from either Sequenza, Sclust or some other software that generates absolute copy number estimates. An example is provided and is referred to in the config file. 
+
+```data/genomes.sequenza.filtered.igv.seg```
 
 ### Prerequisites
 
