@@ -1,0 +1,6 @@
+gnomad:
+    "www.bcgsc.ca/downloads/morinlab/reference/af-only-gnomad.raw.sites.grch37.vcf.gz"
+gnomad_index: 
+    "www.bcgsc.ca/downloads/morinlab/reference/af-only-gnomad.raw.sites.grch37.vcf.gz.tbi"
+gistic_mat:
+    "hg19.UCSC.add_miR.140312.refgene.mat"

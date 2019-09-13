@@ -1,3 +1,4 @@
+configfile: "config.yaml"
 import os
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 HTTP = HTTPRemoteProvider()
@@ -14,25 +15,24 @@ rule gistic:
 
 rule getreference:
     input:
-        HTTP.remote("www.bcgsc.ca/downloads/morinlab/reference/af-only-gnomad.hg38.vcf.gz", keep_local=True,insecure=True),
-	HTTP.remote("www.bcgsc.ca/downloads/morinlab/reference/af-only-gnomad.hg38.vcf.gz.tbi", keep_local=True,insecure=True)
+        HTTP.remote(config["gnomad"], keep_local=True,insecure=True),
+	HTTP.remote(config["gnomad_index"], keep_local=True,insecure=True)
     output:
-        "reference/af-only-gnomad.hg38.vcf.gz"
+        "reference/af-only-gnomad.vcf.gz"
     run:
-        outputName = os.path.basename(input[0])
-	shell("mv {input[0]} reference/{outputName}")
+        shell("mv {input[0]} reference/af-only-gnomad.vcf.gz && mv {input[1]} reference/af-only-gnomad.vcf.gz.tbi")
 
 rule igv2gistic:
     input:
         "data/MCL_genomes.sequenza.filtered.igv.seg",
-	"reference/af-only-gnomad.hg38.vcf.gz"
+	"reference/af-only-gnomad.vcf.gz"
     output:
         f"{GISTIC_1}""MCL_genomes.gistic.seg",
         f"{GISTIC_1}""MCL_genomes.markers.tsv"
     log:
         "logs/local/igv2gistic/igv2gistc.txt"
     params:
-        igv2gistic = "software/scripts/make_gistic_files_vcf_markers.py"
+        igv2gistic = "scripts/make_gistic_files_vcf_markers.py"
     shell:
         "python {params.igv2gistic} -g -c {input[0]} -b {input[1]} -o {output[0]} -m {output[1]} 2> {log}"
 
@@ -46,7 +46,7 @@ rule run_gistic:
         "shub://rdmorin/cancer_docker_singularity:gistic2"
     params:
         basedir = f"{GISTIC_2}",
-        refgene = "hg38.UCSC.add_miR.160920.refgene.mat",
+        refgene = config["gistic_mat"]
     shell:
         "gp_gistic2_from_seg -b {params.basedir} -seg {input[0]} "
         "-mk {input[1]} -refgene {params.refgene} -genegistic 1 -smallmem 1 -broad 1 "

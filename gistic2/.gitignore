@@ -1,0 +1,8 @@
+data
+.snakemake
+Singularity.gistic2
+gistic_out
+logs
+reference/af-only-gnomad.vcf.gz
+reference/af-only-gnomad.vcf.gz.tbi
+.mcrCache8.3
