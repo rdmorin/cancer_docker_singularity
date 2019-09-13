@@ -1,3 +1,5 @@
+segmented:
+    "data/genomes.sequenza.filtered.igv.seg"
 gnomad:
     "www.bcgsc.ca/downloads/morinlab/reference/af-only-gnomad.raw.sites.grch37.vcf.gz"
 gnomad_index: 
