@@ -1,0 +1,29 @@
+configfile: "config.yaml"
+import os
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+HTTP = HTTPRemoteProvider()
+
+
+VCF2MAF_PATH = "vcf2maf_out"
+VCF2MAF_1 = f"{VCF2MAF_PATH}/01-vcf2maf/"
+VCF2MAF_2 = f"{VCF2MAF_PATH}/02-merged_maf/"
+
+rule all:
+    input:
+        f"{VCF2MAF_1}""15-29996_T1-N.passed.snvs.maf"
+
+
+rule run_vcf2maf:
+    input:
+        "vcf/15-29996_T1-N.passed.snvs.vcf"
+    output:
+        f"{VCF2MAF_1}""15-29996_T1-N.passed.snvs.maf"
+    singularity:
+        "shub://rdmorin/cancer_docker_singularity:vcf2maf"
+    params:
+        genome_build = config['reference']['build']
+    shell:
+        "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input} --output-maf {output} "
+        "--tumor-id TUMOR --normal-id NORMAL --ref-fasta .vep/homo_sapiens/97_GRCh38/genome.fa.gz --filter-vcf .vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz "
+        "--ncbi-build {params.genome_build}"
+#vcf2maf.pl --input-vcf WD4086.vcf --output-maf WD4086.maf --tumor-id WD4086 --normal-id NB4086
