@@ -1,0 +1,146 @@
+configfile: "config.yaml"
+import os
+import pandas as pd
+import glob
+import re
+
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+HTTP = HTTPRemoteProvider()
+
+GENOME_PATH = "genome_bams/"
+SEQUENZA_PATH = "sequenza_output"
+SEQUENZA_1 = f"{SEQUENZA_PATH}/01-binned_seqz/"
+SEQUENZA_2 = f"{SEQUENZA_PATH}/02-merged_seqz/"
+SEQUENZA_3 = f"{SEQUENZA_PATH}/03-filtered_seqz/"
+SEQUENZA_4 = f"{SEQUENZA_PATH}/04-filtered_results/"
+SEQUENZA_5 = f"{SEQUENZA_PATH}/05-filtered_igv/"
+
+
+
+#get the tumour/normal pairs, modify to suit your naming scheme
+def get_pairs():
+    tumour_bams = [os.path.basename(x) for x in glob.glob('genome_bams/*_T*.bam')]
+    normal_bams = [os.path.basename(x) for x in glob.glob('genome_bams/*_N*.bam')]
+    samples = [re.match("[^_]+",x)[0] for x in tumour_bams]
+    pairs = []
+    for samp in samples:
+        pairs.append(samp + "_T-N")
+    print(pairs)
+    return(samples,tumour_bams,normal_bams,pairs)
+
+samples, tumours, normals, PAIRS  = get_pairs()
+
+rule all:
+    input:
+        f"{SEQUENZA_PATH}/genomes.sequenza.filtered.segments.tsv",
+        f"{SEQUENZA_PATH}/genomes.sequenza.filtered.igv.seg"
+
+rule getreference:
+    input:
+        HTTP.remote(config["reference"]["sequenza_gc"], keep_local=True,insecure=True),
+        HTTP.remote(config["reference"]["genome"], keep_local=True,insecure=True),
+	HTTP.remote(config["reference"]["dbsnp_pos"], keep_local=True, insecure=True)
+    output:
+        "reference/hg38.genome.gc.ws_50.txt.gz",
+        "reference/genome.fa",
+	"reference/dbsnp.common.pos"
+    run:
+        shell("mv {input[0]} reference/hg38.genome.gc.ws_50.txt.gz && gunzip -c {input[1]} > reference/genome.fa && gunzip -c {input[2]} > reference/dbsnp.common.pos")
+
+rule run_bam2seqz_per_chr:
+    input:
+        tumour = f"{GENOME_PATH}""{patient_id}_{tumour}.bam",
+        normal = f"{GENOME_PATH}""{patient_id}_{normal}.bam"
+    output:
+        temp(f"{SEQUENZA_1}""{patient_id}_{tumour}-{normal}.{chr}.binned.out.seqz.gz")
+    threads:
+        4
+    params:
+        sequenza_gc = "reference/hg38.genome.gc.ws_50.txt.gz",
+        genome = "reference/genome.fa",
+        sequenza_utils = "sequenza-utils"
+    conda:
+        "envs/sequenza.yaml"
+    shell:
+        "{params.sequenza_utils} bam2seqz --qlimit 30 -gc {params.sequenza_gc} --fasta {params.genome} "
+        "-n {input.normal} -t {input.tumour} --chromosome {wildcards.chr} | {params.sequenza_utils} "
+        "seqz_binning -w 300 -s - | gzip > {output}"
+
+rule merge_seqz:
+    input:
+        expand(f"{SEQUENZA_1}""{{patient_id}}_{{tumour}}-{{normal}}.{chr}.binned.out.seqz.gz",
+               chr=config['reference']['chroms'])
+    output:
+        f"{SEQUENZA_2}""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
+    log:
+        "logs/local/merge_sez/{patient_id}_{tumour}-{normal}.log"
+    shell:
+        "bash scripts/merge_seqz.sh {input} | gzip > {output}"
+
+rule filter_seqz:
+    input:
+        f"{SEQUENZA_2}""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
+    output:
+        f"{SEQUENZA_3}""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
+    log:
+        "logs/local/filter_seqz/{patient_id}_{tumour}-{normal}.log"
+    params:
+        filter_seqz = "scripts/filter_seqz.sh",
+        dbsnp_pos = "reference/dbsnp.common.pos",
+        seqz_blacklist = config['reference']['seqz_blacklist']
+    shell:
+        "SEQZ_BLACKLIST_BED_FILES='{params.seqz_blacklist}' "
+        "{params.filter_seqz} {input} {params.dbsnp_pos} | gzip > {output}"
+
+rule filtered_sequenza_analysis:
+    input:
+        f"{SEQUENZA_3}""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
+    output:
+        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
+    log:
+        "logs/local/filtered_sequenza_analysis/{patient_id}_{tumour}-{normal}.log"
+    threads: 1
+    params:
+        sequenza_analysis = "scripts/run_sequenza.R",
+        outdir = f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}",
+        sample_id = "{patient_id}_{tumour}-{normal}"
+    shell:
+        "mkdir -p {params.outdir} && "
+        "Rscript {params.sequenza_analysis} {input} {params.outdir} {params.sample_id} 2> {log}"
+
+rule sequenza_filtered_igv_segments:
+    input:
+        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
+    output:
+        f"{SEQUENZA_5}""{patient_id}_{tumour}-{normal}.igv.seg"
+    log:
+        "logs/local/sequenza_seg_to_igv/{patient_id}_{tumour}-{normal}.log"
+    params:
+        cnv2igv = "scripts/cnv2igv.py",
+        sample_id = "{patient_id}_{tumour}-{normal}"
+    shell:
+        "python "
+        "{params.cnv2igv} --mode sequenza --sequenza_sample {params.sample_id} "
+        "--use_abs_cn --include_loh any {input} > {output} 2> {log}"
+
+rule sequenza_merge_filtered_segments:
+    input:
+        expand(f"{SEQUENZA_4}""{pair}/{pair}_segments.txt", pair = PAIRS)
+    output:
+        f"{SEQUENZA_PATH}/genomes.sequenza.filtered.segments.tsv"
+    params:
+        merge_sequenza_segs = "scripts/merge_sequenza_segs.sh"
+    shell:
+        "bash {params.merge_sequenza_segs} {input} > {output}"
+
+
+rule sequenza_merge_filtered_igv_segments:
+    input:
+        expand(f"{SEQUENZA_5}""{pair}.igv.seg", pair = PAIRS)
+    output:
+        f"{SEQUENZA_PATH}/genomes.sequenza.filtered.igv.seg"
+    params:
+        merge_igv = "scripts/merge_segs.sh"
+    shell:
+        "bash {params.merge_igv} {input} > {output}"
+

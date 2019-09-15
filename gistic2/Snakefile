@@ -38,8 +38,8 @@ rule igv2gistic:
 
 rule run_gistic:
     input:
-        f"{GISTIC_1}""MCL_genomes.gistic.seg",
-        f"{GISTIC_1}""MCL_genomes.markers.tsv"
+        f"{GISTIC_1}""genomes.gistic.seg",
+        f"{GISTIC_1}""genomes.markers.tsv"
     output:
         expand(f"{GISTIC_2}""{cnv}_genes.conf_90.txt", cnv = ["amp", "del"])
     singularity:

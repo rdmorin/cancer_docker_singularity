@@ -1,0 +1,12 @@
+genome_bams
+Snakefile~
+genome_bams
+.snakemake
+config.yaml~
+logs
+reference/dbsnp.common.pos
+reference/hg38.genome.gc.ws_50.txt.gz
+reference/genome.fa
+reference/genome.fa.fai
+sequenza_output/
+www.bcgsc.ca
