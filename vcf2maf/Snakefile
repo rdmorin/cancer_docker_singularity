@@ -61,7 +61,7 @@ rule getGenomeReference:
 
 rule getVEPreference:
     input:
-        HTTP.remote(config['reference']['vep'], keep_local=True,insecure=True)
+        HTTP.remote(config['reference']['vep'], insecure=True)
     output:
         ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt"
     conda:
