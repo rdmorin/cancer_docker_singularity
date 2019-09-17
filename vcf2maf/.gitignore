@@ -1,0 +1,4 @@
+vcf2maf_out/
+.bash_history
+.snakemake/
+.vep/

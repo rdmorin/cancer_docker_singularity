@@ -1,29 +1,101 @@
 configfile: "config.yaml"
 import os
+import glob
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
-HTTP = HTTPRemoteProvider()
+from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider 
 
+#this is extremely slow when compared to HTTP so I have opted to using HTTP even for files that are available through the Ensembl FTP
+
+HTTP = HTTPRemoteProvider()
+FTP = FTPRemoteProvider()
 
 VCF2MAF_PATH = "vcf2maf_out"
 VCF2MAF_1 = f"{VCF2MAF_PATH}/01-vcf2maf/"
 VCF2MAF_2 = f"{VCF2MAF_PATH}/02-merged_maf/"
+GENOME_FASTA = f".vep/homo_sapiens/{config['reference']['vep_version']}/genome.fa.gz"
+EXAC_REF = ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz"
+CACHE_INDEX = ".vep/homo_sapiens/97_GRCh38/1/all_vars.gz.csi"
 
+
+def get_samples():
+    vcfs = [os.path.basename(x) for x in glob.glob('vcf/*snvs*vcf')]
+    samples = [re.match("[^_]+",x)[0] for x in vcfs]
+    return(samples)
+
+SAMPLES=get_samples()
+VCFS = expand("vcf/{patient_id}_T1-N.passed.{mutation_type}.vcf",patient_id=SAMPLES,mutation_type=['snvs','indels'])
+MAFS = expand(f"{VCF2MAF_1}""{patient_id}_T1-N.passed.{mutation_type}.maf",patient_id=SAMPLES,mutation_type=['snvs','indels'])
+MERGED_MAFS = expand(f"{VCF2MAF_2}""{patient_id}_T1-N.passed.all.maf",patient_id=SAMPLES)
+
+print(SAMPLES)
+print(MERGED_MAFS)
 rule all:
     input:
-        f"{VCF2MAF_1}""15-29996_T1-N.passed.snvs.maf"
+        ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt",
+        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
+        GENOME_FASTA,
+	MERGED_MAFS
 
+rule getExac:
+    input:
+        HTTP.remote(config['reference']['exac'],keep_local=True,insecure=True),
+        HTTP.remote(config['reference']['exac_tbi'],keep_local=True,insecure=True)
+    output:
+        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
+        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz.tbi"
+    run:
+        shell("mv {input[0]} .vep/ && mv {input[1]} .vep/")
 
+rule getGenomeReference:
+    input:
+        HTTP.remote(config['reference']['fasta'], keep_local=True,insecure=True)
+    output:
+        GENOME_FASTA
+    run:
+        shell("mv {input[0]} {output}")
+
+rule getVEPreference:
+    input:
+        HTTP.remote(config['reference']['vep'], keep_local=True,insecure=True)
+    output:
+        ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt"
+    run:
+        shell("tar -xf {input[0]} -C .vep/")        
+
+rule indexCache:
+    input:
+        ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt"
+    output:
+        CACHE_INDEX
+    params:
+        version=config['reference']['vep_version']
+    singularity:
+        "shub://rdmorin/cancer_docker_singularity:vcf2maf"
+    shell:
+        "perl /opt/vep/src/ensembl-vep/convert_cache.pl --species homo_sapiens --version {params.version} --dir .vep"
+
+#ToDo: allow this to run on all vcfs in a directory and merge at the level of the patient (i.e. merge indels and snvs after running this)
+#ToDo: embed actual patient ID into the MAF
 rule run_vcf2maf:
     input:
-        "vcf/15-29996_T1-N.passed.snvs.vcf"
+        "vcf/{patient_id}_T1-N.passed.{mutation_type}.vcf"
     output:
-        f"{VCF2MAF_1}""15-29996_T1-N.passed.snvs.maf"
+        f"{VCF2MAF_1}""{patient_id}_T1-N.passed.{mutation_type}.maf",
+        temp("vcf/{patient_id}_T1-N.passed.{mutation_type}.vep.vcf")
     singularity:
         "shub://rdmorin/cancer_docker_singularity:vcf2maf"
     params:
         genome_build = config['reference']['build']
     shell:
-        "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input} --output-maf {output} "
-        "--tumor-id TUMOR --normal-id NORMAL --ref-fasta .vep/homo_sapiens/97_GRCh38/genome.fa.gz --filter-vcf .vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz "
+        "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input} --output-maf {output[0]} "
+        "--tumor-id {wildcards.patient_id} --normal-id {wildcards.patient_id} --ref-fasta {GENOME_FASTA} --filter-vcf {EXAC_REF} "
         "--ncbi-build {params.genome_build}"
-#vcf2maf.pl --input-vcf WD4086.vcf --output-maf WD4086.maf --tumor-id WD4086 --normal-id NB4086
+
+rule merge_maf:
+    input:
+        expand(f"{VCF2MAF_1}""{{patient_id}}_T1-N.passed.{type}.maf",type=['snvs','indels'])
+    output:
+        f"{VCF2MAF_2}""{patient_id}_T1-N.passed.all.maf"
+    shell:
+        "cat <(tail -n +2 {input[0]} | head -1) <(tail -n +3 {input[0]}) <(tail -n +3 {input[1]}) > {output}"
+
