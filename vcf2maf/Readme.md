@@ -7,6 +7,8 @@ The reference (cache) for VEP is also automatically tabix-indexed to speed up th
 
 Checkout the repository. 
 
+###Warning: currently this workflow only works for hg38###
+
 ### Inputs
 
 The workflow currently expects you to have pairs of vcf files from Strelka following the Strelka naming convention in the vcf directory. 
