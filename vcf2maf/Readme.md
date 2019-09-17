@@ -5,7 +5,7 @@ The reference (cache) for VEP is also automatically tabix-indexed to speed up th
 
 ## Getting Started
 
-Checkout the repository. 
+Checkout the repository. Optionally create a new conda environment to run Snakemake using envs/environment.yml."
 
 ### Warning: currently this workflow only works for hg38 ###
 

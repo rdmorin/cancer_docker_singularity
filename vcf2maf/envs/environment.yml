@@ -1,4 +1,4 @@
-name: bam
+name: vcf2maf-snakemake
 channels:
   - anaconda
   - conda-forge
