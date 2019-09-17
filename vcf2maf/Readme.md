@@ -7,7 +7,7 @@ The reference (cache) for VEP is also automatically tabix-indexed to speed up th
 
 Checkout the repository. 
 
-###Warning: currently this workflow only works for hg38###
+### Warning: currently this workflow only works for hg38 ###
 
 ### Inputs
 
