@@ -16,7 +16,7 @@ GENOME_FASTA = f".vep/homo_sapiens/{config['reference']['vep_version']}/genome.f
 EXAC_REF = ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz"
 CACHE_INDEX = ".vep/homo_sapiens/97_GRCh38/1/all_vars.gz.csi"
 
-
+#this will likely need to be changed to work for other variant callers and for determining sample IDs in projects with more complex ID formatting
 def get_samples():
     vcfs = [os.path.basename(x) for x in glob.glob('vcf/*snvs*vcf')]
     samples = [re.match("[^_]+",x)[0] for x in vcfs]
@@ -32,19 +32,21 @@ print(MERGED_MAFS)
 rule all:
     input:
         ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt",
-        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
+        #".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
         GENOME_FASTA,
 	MERGED_MAFS
 
-rule getExac:
-    input:
-        HTTP.remote(config['reference']['exac'],keep_local=True,insecure=True),
-        HTTP.remote(config['reference']['exac_tbi'],keep_local=True,insecure=True)
-    output:
-        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
-        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz.tbi"
-    run:
-        shell("mv {input[0]} .vep/ && mv {input[1]} .vep/")
+#disabled
+#uncomment the following lines and change the vcf2maf rule and remove comment in "all" rule to enable this feature
+#rule getExac:
+#    input:
+#        HTTP.remote(config['reference']['exac'],keep_local=True,insecure=True),
+#        HTTP.remote(config['reference']['exac_tbi'],keep_local=True,insecure=True)
+#    output:
+#        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz",
+#        ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz.tbi"
+#    run:
+#        shell("mv {input[0]} .vep/ && mv {input[1]} .vep/")
 
 rule getGenomeReference:
     input:
@@ -74,8 +76,6 @@ rule indexCache:
     shell:
         "perl /opt/vep/src/ensembl-vep/convert_cache.pl --species homo_sapiens --version {params.version} --dir .vep"
 
-#ToDo: allow this to run on all vcfs in a directory and merge at the level of the patient (i.e. merge indels and snvs after running this)
-#ToDo: embed actual patient ID into the MAF
 rule run_vcf2maf:
     input:
         "vcf/{patient_id}_T1-N.passed.{mutation_type}.vcf"
@@ -88,7 +88,7 @@ rule run_vcf2maf:
         genome_build = config['reference']['build']
     shell:
         "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input} --output-maf {output[0]} "
-        "--tumor-id {wildcards.patient_id} --normal-id {wildcards.patient_id} --ref-fasta {GENOME_FASTA} --filter-vcf {EXAC_REF} "
+        "--tumor-id {wildcards.patient_id} --normal-id {wildcards.patient_id} --ref-fasta {GENOME_FASTA} " #--filter-vcf {EXAC_REF} "
         "--ncbi-build {params.genome_build}"
 
 rule merge_maf:
