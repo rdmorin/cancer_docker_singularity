@@ -16,6 +16,7 @@ GENOME_FASTA = f".vep/homo_sapiens/{config['reference']['vep_version']}/genome.f
 EXAC_REF = ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz"
 CACHE_INDEX = ".vep/homo_sapiens/97_GRCh38/1/all_vars.gz.csi"
 
+
 #this will likely need to be changed to work for other variant callers and for determining sample IDs in projects with more complex ID formatting
 def get_samples():
     vcfs = [os.path.basename(x) for x in glob.glob('vcf/*snvs*vcf')]
@@ -82,6 +83,8 @@ rule indexCache:
 
 rule run_vcf2maf:
     input:
+        GENOME_FASTA,
+        CACHE_INDEX,
         "vcf/{patient_id}_T1-N.passed.{mutation_type}.vcf"
     output:
         f"{VCF2MAF_1}""{patient_id}_T1-N.passed.{mutation_type}.maf",
