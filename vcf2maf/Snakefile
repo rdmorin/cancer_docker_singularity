@@ -53,6 +53,8 @@ rule getGenomeReference:
         HTTP.remote(config['reference']['fasta'], keep_local=True,insecure=True)
     output:
         GENOME_FASTA
+    conda:
+        "envs/environment.yml"
     run:
         shell("mv {input[0]} {output}")
 
@@ -61,6 +63,8 @@ rule getVEPreference:
         HTTP.remote(config['reference']['vep'], keep_local=True,insecure=True)
     output:
         ".vep/homo_sapiens/97_GRCh38/chr_synonyms.txt"
+    conda:
+        "envs/environment.yml"
     run:
         shell("tar -xf {input[0]} -C .vep/")        
 
