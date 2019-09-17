@@ -11,7 +11,7 @@ Checkout the repository.
 
 ### Inputs
 
-The workflow currently expects you to have pairs of vcf files from Strelka following the Strelka naming convention in the vcf directory. 
+The workflow currently expects you to have pairs of vcf files from Strelka following the Strelka naming convention in the vcf directory. A regular expression is used to identify sample IDs and to remove additional details, which should be separated by an underscore. Because of this, there can be no underscores in the sample ID itself. 
 
 ```vcf/mysample_TN.snvs.vcf vcf/mysample_TN.indels.vcf```
 
