@@ -1,0 +1,9 @@
+reference:
+    fasta:
+        "www.bcgsc.ca/downloads/morinlab/reference/genome.hg19.fa.bgz"
+    build:
+        "GRCh37"
+    vep:
+        "www.bcgsc.ca/downloads/morinlab/reference/homo_sapiens_vep_97_GRCh37.tar.gz"
+    vep_version:
+        "97_GRCh37"
