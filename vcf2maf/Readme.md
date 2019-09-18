@@ -7,7 +7,7 @@ The reference (cache) for VEP is also automatically tabix-indexed to speed up th
 
 Checkout the repository. Optionally create a new conda environment to run Snakemake using envs/environment.yml."
 
-### Warning: currently this workflow only works for hg38 ###
+### Warning: currently this workflow only works for hg38. To be extended to hg19 in the near future
 
 ### Inputs
 
@@ -27,3 +27,7 @@ snakemake --use-singularity
 
 The intermediate files needed for VEP to run are pulled from a remote server and are stored in the reference directory. The outputs are written to subdirectories in vcf2maf_out/
 
+### Known Issues
+
+Some versions of Snakemake are not compatible with certain Singularity versions due to a bug in Snakemake. This has been fixed in more recent versions. If you encounter an error along these lines, try updating to a more recent version of Snakemake or use the provided environment in envs/environment.yml
+```if not LooseVersion(v) >= LooseVersion```
