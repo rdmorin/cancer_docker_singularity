@@ -12,7 +12,7 @@ FTP = FTPRemoteProvider()
 VCF2MAF_PATH = "vcf2maf_out"
 VCF2MAF_1 = f"{VCF2MAF_PATH}/01-vcf2maf/"
 VCF2MAF_2 = f"{VCF2MAF_PATH}/02-merged_maf/"
-GENOME_FASTA = f".vep/homo_sapiens/{config['reference']['vep_version']}/genome.fa.gz"
+GENOME_FASTA = f".vep/homo_sapiens/{config['reference']['vep_version']}/genome.fa"
 EXAC_REF = ".vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz"
 CACHE_INDEX = ".vep/homo_sapiens/97_GRCh38/1/all_vars.gz.csi"
 
@@ -54,8 +54,8 @@ rule getGenomeReference:
         HTTP.remote(config['reference']['fasta'], keep_local=True,insecure=True)
     output:
         GENOME_FASTA
-    run:
-        shell("mv {input[0]} {output}")
+    shell:
+        "gunzip -c {input} > {output}"
 
 rule getVEPreference:
     input:
@@ -90,7 +90,7 @@ rule run_vcf2maf:
     params:
         genome_build = config['reference']['build']
     shell:
-        "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input} --output-maf {output[0]} "
+        "vcf2maf.pl --vep-path /opt/vep/src/ensembl-vep --input-vcf {input[2]} --output-maf {output[0]} "
         "--tumor-id {wildcards.patient_id} --normal-id {wildcards.patient_id} --ref-fasta {GENOME_FASTA} " #--filter-vcf {EXAC_REF} "
         "--ncbi-build {params.genome_build}"
 

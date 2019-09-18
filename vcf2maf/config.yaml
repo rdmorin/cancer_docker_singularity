@@ -1,6 +1,6 @@
 reference:
     fasta:
-        "www.bcgsc.ca/downloads/morinlab/reference/genome.hg38.fa.bgz"
+        "www.bcgsc.ca/downloads/morinlab/reference/genome.hg38.fa.gz"
     build:
         "GRCh38"
     vep:

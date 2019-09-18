@@ -1,6 +1,6 @@
 reference:
     fasta:
-        "www.bcgsc.ca/downloads/morinlab/reference/genome.hg19.fa.bgz"
+        "www.bcgsc.ca/downloads/morinlab/reference/genome.hg19.fa.gz"
     build:
         "GRCh37"
     vep:
