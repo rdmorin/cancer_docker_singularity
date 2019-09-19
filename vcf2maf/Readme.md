@@ -5,9 +5,8 @@ The reference (cache) for VEP is also automatically tabix-indexed to speed up th
 
 ## Getting Started
 
-Checkout the repository. Optionally create a new conda environment to run Snakemake using envs/environment.yml."
-
-### Warning: currently this workflow only works for hg38. To be extended to hg19 in the near future
+Checkout the repository. Optionally create a new conda environment to run Snakemake using envs/environment.yml.
+If you are using hg19, replace the default (hg38) config.yaml file with config.hg19.yaml. 
 
 ### Inputs
 
@@ -29,5 +28,10 @@ The intermediate files needed for VEP to run are pulled from a remote server and
 
 ### Known Issues
 
-Some versions of Snakemake are not compatible with certain Singularity versions due to a bug in Snakemake. This has been fixed in more recent versions. If you encounter an error along these lines, try updating to a more recent version of Snakemake or use the provided environment in envs/environment.yml
+Some versions of Snakemake are not compatible with certain Singularity versions due to a bug in Snakemake. This has been fixed in more recent versions. If you encounter an error message like this:
+
 ```if not LooseVersion(v) >= LooseVersion```
+
+...try updating to a more recent version of Snakemake or use the provided environment in envs/environment.yml
+
+
