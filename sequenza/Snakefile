@@ -1,6 +1,5 @@
 configfile: "config.yaml"
 import os
-import pandas as pd
 import glob
 import re
 
@@ -15,7 +14,17 @@ SEQUENZA_3 = f"{SEQUENZA_PATH}/03-filtered_seqz/"
 SEQUENZA_4 = f"{SEQUENZA_PATH}/04-filtered_results/"
 SEQUENZA_5 = f"{SEQUENZA_PATH}/05-filtered_igv/"
 
+#use if you already have sequenza results and only want to run the post-processing
+#def get_pairs_sequenza():
+#    tumour_seg = [os.path.basename(x) for x in glob.glob('sequenza_output/04-filtered_results/*txt')]
+#    samples = [re.match("[^_]+",x)[0] for x in tumour_seg]
+#    pairs = []
+#    for samp in samples:
+#        pairs.append(samp + "_T-N")
+#    print(pairs)
+#    return(pairs)
 
+#PAIRS  = get_pairs_sequenza()
 
 #get the tumour/normal pairs, modify to suit your naming scheme
 def get_pairs():
@@ -110,7 +119,7 @@ rule filtered_sequenza_analysis:
 
 rule sequenza_filtered_igv_segments:
     input:
-        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
+        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}_segments.txt"
     output:
         f"{SEQUENZA_5}""{patient_id}_{tumour}-{normal}.igv.seg"
     log:
@@ -120,12 +129,12 @@ rule sequenza_filtered_igv_segments:
         sample_id = "{patient_id}_{tumour}-{normal}"
     shell:
         "python "
-        "{params.cnv2igv} --mode sequenza --sequenza_sample {params.sample_id} "
-        "--use_abs_cn --include_loh any {input} > {output} 2> {log}"
+        "{params.cnv2igv} --mode sequenza --sample {params.sample_id} "
+        "{input} > {output} 2> {log}"
 
 rule sequenza_merge_filtered_segments:
     input:
-        expand(f"{SEQUENZA_4}""{pair}/{pair}_segments.txt", pair = PAIRS)
+        expand(f"{SEQUENZA_4}""{pair}_segments.txt", pair = PAIRS)
     output:
         f"{SEQUENZA_PATH}/genomes.sequenza.filtered.segments.tsv"
     params:

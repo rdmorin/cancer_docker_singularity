@@ -49,6 +49,6 @@ rule run_gistic:
         refgene = config["gistic_mat"]
     shell:
         "gp_gistic2_from_seg -b {params.basedir} -seg {input[0]} "
-        "-mk {input[1]} -refgene {params.refgene} -genegistic 1 -smallmem 1 -broad 1 "
+        "-mk {input[1]} -refgene reference/{params.refgene} -genegistic 1 -smallmem 1 -broad 1 "
         "-brlen 0.5 -conf 0.90 -armpeel 0 -savegene 1 -gcm extreme -smalldisk 1"
 
