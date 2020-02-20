@@ -6,13 +6,13 @@ import re
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 HTTP = HTTPRemoteProvider()
 
-GENOME_PATH = "genome_bams/"
+GENOME_PATH = "genome_bams"
 SEQUENZA_PATH = "sequenza_output"
-SEQUENZA_1 = f"{SEQUENZA_PATH}/01-binned_seqz/"
-SEQUENZA_2 = f"{SEQUENZA_PATH}/02-merged_seqz/"
-SEQUENZA_3 = f"{SEQUENZA_PATH}/03-filtered_seqz/"
-SEQUENZA_4 = f"{SEQUENZA_PATH}/04-filtered_results/"
-SEQUENZA_5 = f"{SEQUENZA_PATH}/05-filtered_igv/"
+SEQUENZA_1 = f"{SEQUENZA_PATH}/01-binned_seqz"
+SEQUENZA_2 = f"{SEQUENZA_PATH}/02-merged_seqz"
+SEQUENZA_3 = f"{SEQUENZA_PATH}/03-filtered_seqz"
+SEQUENZA_4 = f"{SEQUENZA_PATH}/04-filtered_results"
+SEQUENZA_5 = f"{SEQUENZA_PATH}/05-filtered_igv"
 
 #use if you already have sequenza results and only want to run the post-processing
 #def get_pairs_sequenza():
@@ -34,34 +34,55 @@ def get_pairs():
     pairs = []
     for samp in samples:
         pairs.append(samp + "_T-N")
-    print(pairs)
+    #print(pairs)
+    #print(tumour_bams)
+    #print(normal_bams)
     return(samples,tumour_bams,normal_bams,pairs)
 
 samples, tumours, normals, PAIRS  = get_pairs()
 
 rule all:
     input:
+#        f"{SEQUENZA_3}/""201022_T-N.filtered.binned.out.seqz.gz",
+#        f"{SEQUENZA_4}/""201022_T-N/201022_T-N_segments.txt",
+#        f"{SEQUENZA_3}/""101022_T-N.filtered.binned.out.seqz.gz",
+#        f"{SEQUENZA_4}/""101022_T-N/101022_T-N_segments.txt",
         f"{SEQUENZA_PATH}/genomes.sequenza.filtered.segments.tsv",
-        f"{SEQUENZA_PATH}/genomes.sequenza.filtered.igv.seg"
+#        f"{SEQUENZA_5}/genomes.sequenza.filtered.igv.seg"
 
-rule getreference:
+rule get_gc_reference:
     input:
-        HTTP.remote(config["reference"]["sequenza_gc"], keep_local=True,insecure=True),
-        HTTP.remote(config["reference"]["genome"], keep_local=True,insecure=True),
-	HTTP.remote(config["reference"]["dbsnp_pos"], keep_local=True, insecure=True)
+        HTTP.remote(config["reference"]["sequenza_gc"], keep_local=True)
     output:
-        "reference/hg38.genome.gc.ws_50.txt.gz",
-        "reference/genome.fa",
-	"reference/dbsnp.common.pos"
-    run:
-        shell("mv {input[0]} reference/hg38.genome.gc.ws_50.txt.gz && gunzip -c {input[1]} > reference/genome.fa && gunzip -c {input[2]} > reference/dbsnp.common.pos")
+        "reference/hg38.genome.gc.ws_50.txt.gz"
+    shell:
+        "mv {input} {output}"
+
+rule get_genome_reference:
+    input:
+        HTTP.remote(config["reference"]["genome"], keep_local=True)
+    output:
+        "reference/genome.fa"
+    shell:
+        "gunzip -c {input} > {output}"
+
+rule get_dbsnp_reference:
+    input:
+        HTTP.remote(config["reference"]["dbsnp_pos"], keep_local=True)
+    output:
+        "reference/dbsnp.common.pos"
+    shell:
+        "gunzip -c {input} > {output}"
 
 rule run_bam2seqz_per_chr:
     input:
-        tumour = f"{GENOME_PATH}""{patient_id}_{tumour}.bam",
-        normal = f"{GENOME_PATH}""{patient_id}_{normal}.bam"
+        tumour = f"{GENOME_PATH}/""{patient_id}_{tumour}.bam",
+        normal = f"{GENOME_PATH}/""{patient_id}_{normal}.bam",
+        ref1="reference/hg38.genome.gc.ws_50.txt.gz",
+        ref2="reference/genome.fa",
+        ref3="reference/dbsnp.common.pos"
     output:
-        temp(f"{SEQUENZA_1}""{patient_id}_{tumour}-{normal}.{chr}.binned.out.seqz.gz")
+        temp(f"{SEQUENZA_1}/""{patient_id}_{tumour}-{normal}.{chr}.binned.out.seqz.gz")
     threads:
         4
     params:
@@ -77,10 +98,10 @@ rule run_bam2seqz_per_chr:
 
 rule merge_seqz:
     input:
-        expand(f"{SEQUENZA_1}""{{patient_id}}_{{tumour}}-{{normal}}.{chr}.binned.out.seqz.gz",
+        expand(f"{SEQUENZA_1}/""{{patient_id}}_{{tumour}}-{{normal}}.{chr}.binned.out.seqz.gz",
                chr=config['reference']['chroms'])
     output:
-        f"{SEQUENZA_2}""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
+        f"{SEQUENZA_2}/""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
     log:
         "logs/local/merge_sez/{patient_id}_{tumour}-{normal}.log"
     shell:
@@ -88,9 +109,9 @@ rule merge_seqz:
 
 rule filter_seqz:
     input:
-        f"{SEQUENZA_2}""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
+        f"{SEQUENZA_2}/""{patient_id}_{tumour}-{normal}.binned.out.seqz.gz"
     output:
-        f"{SEQUENZA_3}""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
+        f"{SEQUENZA_3}/""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
     log:
         "logs/local/filter_seqz/{patient_id}_{tumour}-{normal}.log"
     params:
@@ -103,15 +124,15 @@ rule filter_seqz:
 
 rule filtered_sequenza_analysis:
     input:
-        f"{SEQUENZA_3}""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
+        f"{SEQUENZA_3}/""{patient_id}_{tumour}-{normal}.filtered.binned.out.seqz.gz"
     output:
-        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
+        f"{SEQUENZA_4}/""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
     log:
         "logs/local/filtered_sequenza_analysis/{patient_id}_{tumour}-{normal}.log"
     threads: 1
     params:
         sequenza_analysis = "scripts/run_sequenza.R",
-        outdir = f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}",
+        outdir = f"{SEQUENZA_4}/""{patient_id}_{tumour}-{normal}",
         sample_id = "{patient_id}_{tumour}-{normal}"
     shell:
         "mkdir -p {params.outdir} && "
@@ -119,9 +140,9 @@ rule filtered_sequenza_analysis:
 
 rule sequenza_filtered_igv_segments:
     input:
-        f"{SEQUENZA_4}""{patient_id}_{tumour}-{normal}_segments.txt"
+        f"{SEQUENZA_4}/""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}_segments.txt"
     output:
-        f"{SEQUENZA_5}""{patient_id}_{tumour}-{normal}.igv.seg"
+        f"{SEQUENZA_5}/""{patient_id}_{tumour}-{normal}/{patient_id}_{tumour}-{normal}.igv.seg"
     log:
         "logs/local/sequenza_seg_to_igv/{patient_id}_{tumour}-{normal}.log"
     params:
@@ -134,7 +155,7 @@ rule sequenza_filtered_igv_segments:
 
 rule sequenza_merge_filtered_segments:
     input:
-        expand(f"{SEQUENZA_4}""{pair}_segments.txt", pair = PAIRS)
+        expand(f"{SEQUENZA_4}/""{pair}/{pair}_segments.txt", pair = PAIRS)
     output:
         f"{SEQUENZA_PATH}/genomes.sequenza.filtered.segments.tsv"
     params:
@@ -145,7 +166,7 @@ rule sequenza_merge_filtered_segments:
 
 rule sequenza_merge_filtered_igv_segments:
     input:
-        expand(f"{SEQUENZA_5}""{pair}.igv.seg", pair = PAIRS)
+        expand(f"{SEQUENZA_5}/""{pair}.igv.seg", pair = PAIRS)
     output:
         f"{SEQUENZA_PATH}/genomes.sequenza.filtered.igv.seg"
     params:
