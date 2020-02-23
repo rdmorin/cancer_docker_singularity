@@ -6,6 +6,7 @@ channels:
   - r
   - defaults
 dependencies:
+  - r-tidyverse
   - r-sequenza
   - _libgcc_mutex=0.1=main
   - bzip2=1.0.8=h516909a_1
