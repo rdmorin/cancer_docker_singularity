@@ -6,6 +6,7 @@ channels:
   - r
   - defaults
 dependencies:
+  - r-sequenza
   - _libgcc_mutex=0.1=main
   - bzip2=1.0.8=h516909a_1
   - ca-certificates=2019.9.11=hecc5488_0
