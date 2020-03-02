@@ -15,8 +15,8 @@ rule gistic:
 
 rule getreference:
     input:
-        HTTP.remote(config["gnomad"], keep_local=True,insecure=True),
-	HTTP.remote(config["gnomad_index"], keep_local=True,insecure=True)
+        HTTP.remote(config["gnomad"], keep_local=True),
+	HTTP.remote(config["gnomad_index"], keep_local=True)
     output:
         "reference/af-only-gnomad.vcf.gz"
     run:
@@ -24,7 +24,7 @@ rule getreference:
 
 rule igv2gistic:
     input:
-        "data/genomes.sequenza.filtered.igv.seg",
+        "data/genomes.sequenza.filtered.igv.chr.seg",
 	"reference/af-only-gnomad.vcf.gz"
     output:
         f"{GISTIC_1}""genomes.gistic.seg",

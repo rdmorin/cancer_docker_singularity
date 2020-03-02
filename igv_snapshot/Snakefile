@@ -1,42 +1,48 @@
-igv_jar = "/home/rmorin/analysis/manta/bin/IGV_Linux_2.8.0/lib/igv.jar"
-#ideally these won't be necessary to set if we use IGV release with bundled Java
-#export JAVA_HOME="/home/rmorin/analysis/manta/bin/IGV_Linux_2.8.0/jdk-11"
-#export JAVA_LIB="--module-path="$JAVA_HOME/lib"
-#export PATH=$PATH:$JAVA_HOME/bin
-BED_DIR = "temp_bedpe"
-BATCH_DIR = "temp_igv"
-BAM_DIR = "bam/renamed"
-IGV_BIN = "bin/IGV_Linux_2.7.2/igv.sh"
-SNAPSHOT_DIR = "out/03-snapshot"
+#using a bedpe file as input, generate png screenshots of both ends of putative breakpoints using IGV 
+#download and install IGV version that works well with this approach
+#
 
-#example with fewer SVs:
-# YH946285Y01
-# 65033246891
+#path and configuration parameters for IGV
+IGV_JAR = "bin/IGV_Linux_2.7.2/lib/igv.jar"
+IGV_BIN = "bin/IGV_Linux_2.7.2/igv.sh"
+IGV_PANEL_HEIGHT = 500
+PADDING = 300
+
+#for display preferences that can be configured in IGV, manually open IGV and set the desired preferences
+# or edit the prefs.properties file in ~/igv/
+
+BED_DIR = "data/bedpe"
+BATCH_DIR = "results/igv"
+BAM_DIR = "data/genome_bams"
+
+SNAPSHOT_DIR = "out/01-snapshot"
+
+wildcard_constraints:
+    tumour="\w\w\w\w\w-\d\d-\d\d-\d\d\d\d\d-\w\w\w-\w\w\w",
+    normal="\w\w\w\w\w-\d\d-\d\d-\d\d\d\d\d-\w\w\w-\w\w\w"
+#BLGSP-71-30-00637-01A-01E
 
 rule all:
     input:
-        f"{BATCH_DIR}/""YH946285Y01_L16_1-650332468916_L1.D702_504_1.igv.batch",
-        f"{BATCH_DIR}/""YH946285Y01_L16_1-650332468916_L1.D702_504_1.igv.snapshot_complete",
-        #f"{BATCH_DIR}/""YJ286090Y04_L24_1-680041183216_L1.D709_508_1.igv.batch",
-        #f"{BAM_DIR}/"""YJ286090Y04_L24_1-680041183216_L1.D709_508_1.igv.snapshot_complete"
+        "bin/IGV_Linux_2.7.2/lib/igv.jar",
+        f"{BATCH_DIR}/""BLGSP-71-30-00637-01A-01E-BLGSP-71-30-00682-10A-01D.igv.snapshot_complete"
 
 # create IGV batch script for every row in a bedpe file
 # The snapshots will be named after the sample and both regions being shown
 # the pad parameter affects how much context on either side of the breakpoint is shown
 rule screenshot_config:
     input:
-        tbam=f"{BAM_DIR}/""{tumour}.coord.bam",
-	tbai=f"{BAM_DIR}/""{tumour}.coord.bai",
-        nbam=f"{BAM_DIR}/""{normal}.coord.bam",
-        nbai=f"{BAM_DIR}/""{normal}.coord.bai",
+        tbam=f"{BAM_DIR}/""{tumour}.bam",
+	tbai=f"{BAM_DIR}/""{tumour}.bam.bai",
+        nbam=f"{BAM_DIR}/""{normal}.bam",
+        nbai=f"{BAM_DIR}/""{normal}.bam.bai",
 	bedpe=f"{BED_DIR}/""{tumour}-{normal}.bedpe"
     output: batch=f"{BATCH_DIR}/""{tumour}-{normal}.igv.batch"
-    params:filename=f"{BATCH_DIR}/""{tumour}-{normal}-", pad=200, dir=SNAPSHOT_DIR
+    params:filename=f"{BATCH_DIR}/""{tumour}-{normal}-", pad=PADDING, dir=SNAPSHOT_DIR
     run:
         import os.path
         batch_template = """load {input.tbam}
 load {input.nbam}
-preference SAM.SHOW_CENTER_LINE false
 maxPanelHeight 400
 snapshotDirectory {params.dir}
 genome hg38
@@ -47,7 +53,10 @@ snapshot {filename}{region1}-{region2}.png
 new
 
 """
-        
+        #TO DO: 
+        # -allow user to limit to SVs meeting specific criteria. Some sanity check for massive bedpe files???
+        # -optionally skip any existing PNG files and only make a batch file for missing pngs so the process can pick up where it left off
+        # -
         with open(input.bedpe) as call_file:
             for line in call_file:
                 if line.startswith("#CHROM"):
@@ -64,16 +73,19 @@ new
         batchfile.write("exit")
 
         
-#still untested. Some versions do not work well (or at all) with this method, so it is an important consideration
-#rule igv_download:
-#    output: "igv.jar"
-#    params: runtime="600", memory="1G"
-#    shell: "https://data.broadinstitute.org/igv/projects/downloads/2.7/IGV_Linux_2.7.2.zip > IGV_Linux_2.7.2.zip; unzip IGV_Linux_2.7.2.zip"
+#automatically install the version that works consistently with large batch scripts
+rule igv_download:
+    output: f"{IGV_JAR}"
+    params: runtime="600", memory="1G"
+    shell:
+        "curl https://data.broadinstitute.org/igv/projects/downloads/2.7/IGV_Linux_2.7.2.zip > bin/IGV_Linux_2.7.2.zip && "
+        "unzip -d bin bin/IGV_Linux_2.7.2.zip"
 
 rule igv_screenshot:
     input: batchfile=f"{BATCH_DIR}/""{tumour}-{normal}.igv.batch"
     output: f"{BATCH_DIR}/""{tumour}-{normal}.igv.snapshot_complete"
-    params: memory="4G"
+    params:
+        igv_script=f"{IGV_BIN}"
     #shell: 'xvfb-run --auto-servernum --server-args="-screen 0 3200x2400x24" java -Xmx4000m -jar {input.igv} -b {input.batchfile} || true'
     shell:
-        'xvfb-run --auto-servernum {IGV_BIN} -b {input.batchfile} && touch {output}'
+        'xvfb-run --auto-servernum {params.igv_script} -b {input.batchfile} && touch {output}'
