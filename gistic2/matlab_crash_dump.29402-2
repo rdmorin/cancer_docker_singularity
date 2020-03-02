@@ -1,0 +1,144 @@
+
+------------------------------------------------------------------------
+       Segmentation violation detected at Sun Feb 23 17:36:18 2020
+------------------------------------------------------------------------
+
+Configuration:
+  Crash Decoding     : Disabled
+  Current Visual     : None
+  Default Encoding   : US-ASCII
+  GNU C Library      : 2.19 stable
+  MATLAB Architecture: glnxa64
+  MATLAB Root        : /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83
+  MATLAB Version     : 8.3.0.532 (R2014a)
+  Operating System   : Linux 3.10.0-957.5.1.el7.x86_64 #1 SMP Fri Feb 1 14:54:57 UTC 2019 x86_64
+  Processor ID       : x86 Family 6 Model 63 Stepping 4, GenuineIntel
+  Virtual Machine    : Java 1.7.0_11-b21 with Oracle Corporation Java HotSpot(TM) 64-Bit Server VM mixed mode
+  Window System      : No active display
+
+Fault Count: 2
+
+
+Abnormal termination:
+Floating point exception
+
+Register State (from fault):
+  RAX = 0000000000000027  RBX = 00007faac4307ca0
+  RCX = 0000000000000000  RDX = 0000000000000000
+  RSP = 00007fac6c127ec0  RBP = 00007fac6c128170
+  RSI = 00007fac6c127f80  RDI = 00007fac6c127f40
+
+   R8 = 0000000000000000   R9 = 0000000000000027
+  R10 = 0000000000000027  R11 = 00007fac7d82c672
+  R12 = 00007fac07b0a4e0  R13 = 00000000000064db
+  R14 = 00007fac6c127fe0  R15 = 0000000000000001
+
+  RIP = 00007fac1b591156  EFL = 0000000000010246
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x00007fac1b591156 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmathelem.so+06213974
+[  1] 0x00007fac1b58b368 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmathelem.so+06189928
+[  2] 0x00007fac1b58c5ed /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmathelem.so+06194669
+[  3] 0x00007fac7593cde3 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00417251
+[  4] 0x00007fac75929874 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00338036 _ZN13Mfh_MATLAB_fn11dispatch_fhEiPP11mxArray_tagiS2_+00000244
+[  5] 0x00007fac74e5eba3 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+03754915
+[  6] 0x00007fac74d88101 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02875649
+[  7] 0x00007fac74d890ae /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02879662
+[  8] 0x00007fac74d97019 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02936857
+[  9] 0x00007fac74d97183 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02937219
+[ 10] 0x00007fac74ecd172 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+04206962
+[ 11] 0x00007fac74d02589 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02327945
+[ 12] 0x00007fac74d05167 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02339175
+[ 13] 0x00007fac74d0326f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02331247
+[ 14] 0x00007fac74d03ec4 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02334404
+[ 15] 0x00007fac74d6130b /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02716427
+[ 16] 0x00007fac7597aad9 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00670425 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00000697
+[ 17] 0x00007fac74d4520e /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02601486
+[ 18] 0x00007fac74d001d0 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02318800
+[ 19] 0x00007fac74d021ea /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02327018
+[ 20] 0x00007fac74d05167 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02339175
+[ 21] 0x00007fac74d0326f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02331247
+[ 22] 0x00007fac74d03ec4 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02334404
+[ 23] 0x00007fac74d6130b /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02716427
+[ 24] 0x00007fac7597aad9 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00670425 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00000697
+[ 25] 0x00007fac74d4520e /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02601486
+[ 26] 0x00007fac74d001d0 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02318800
+[ 27] 0x00007fac74d021ea /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02327018
+[ 28] 0x00007fac74d05167 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02339175
+[ 29] 0x00007fac74d0326f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02331247
+[ 30] 0x00007fac74d03ec4 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02334404
+[ 31] 0x00007fac74d6130b /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02716427
+[ 32] 0x00007fac7597aad9 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00670425 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00000697
+[ 33] 0x00007fac74d4520e /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02601486
+[ 34] 0x00007fac74d001d0 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02318800
+[ 35] 0x00007fac74d021ea /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02327018
+[ 36] 0x00007fac74d05167 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02339175
+[ 37] 0x00007fac74d0326f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02331247
+[ 38] 0x00007fac74d03ec4 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02334404
+[ 39] 0x00007fac74d6130b /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02716427
+[ 40] 0x00007fac7597aad9 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00670425 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00000697
+[ 41] 0x00007fac74d2a360 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02491232
+[ 42] 0x00007fac74d29329 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02487081
+[ 43] 0x00007fac74c9e456 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+01918038 inCallFcnWithTrap+00000086
+[ 44] 0x00007fac74cf62ab /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02278059
+[ 45] 0x00007fac74c9fbf6 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+01924086 _Z44inCallFcnWithTrapInDesiredWSAndPublishEventsiPP11mxArray_tagiS1_PKcbP15inWorkSpace_tag+00000102
+[ 46] 0x00007fac7545ce8f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00614031 _ZN3iqm15BaseFEvalPlugin7executeEP15inWorkSpace_tagRN5boost10shared_ptrIN14cmddistributor17IIPCompletedEventEEE+00000287
+[ 47] 0x00007fac76173689 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmcr.so+00435849
+[ 48] 0x00007fac75458565 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00595301
+[ 49] 0x00007fac75444ee8 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00515816
+[ 50] 0x00007fac808dce33 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+01646131 _ZN10eventqueue18UserEventQueueImpl5flushEv+00000611
+[ 51] 0x00007fac72df31ed /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwuix.so+00221677
+[ 52] 0x00007fac809826ea /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02324202
+[ 53] 0x00007fac80982a24 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02325028
+[ 54] 0x00007fac8097e57f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02307455
+[ 55] 0x00007fac809839b5 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02329013
+[ 56] 0x00007fac80983de7 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02330087
+[ 57] 0x00007fac809844c0 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+02331840 _Z25svWS_ProcessPendingEventsiib+00000080
+[ 58] 0x00007fac76162098 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmcr.so+00364696
+[ 59] 0x00007fac761623bf /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmcr.so+00365503
+[ 60] 0x00007fac7615d28f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmcr.so+00344719
+[ 61] 0x00007fac815c4184              /lib/x86_64-linux-gnu/libpthread.so.0+00033156
+[ 62] 0x00007fac812f103d                    /lib/x86_64-linux-gnu/libc.so.6+01040445 clone+00000109
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 00007fac641a2110  RBX = 00007fac6c12bd40
+  RCX = 00007fac6c12bcc8  RDX = 0000000000000006
+  RSP = 00007fac6c12bca0  RBP = 00007fac6c12bcc0
+  RSI = 00007fac7597aed8  RDI = 00007fac6c12bd40
+
+   R8 = 0000000000000000   R9 = 00007fac7598ac79
+  R10 = 0000000000000000  R11 = 00007fac8137e550
+  R12 = 0000000000000000  R13 = ffffffffffffffff
+  R14 = 0000000000000000  R15 = ffffffffffffffff
+
+  RIP = 00007fac767b7c84  EFL = 0000000000010206
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x00007fac767b7c84 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmclbase.so+00232580 _ZN33mdFunctionCallProtectedDispatcherD2Ev+00000260
+[  1] 0x00007fac7597aea6 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00671398 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00001670
+[  2] 0x00007fac74d4520e /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02601486
+[  3] 0x00007fac74d001d0 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02318800
+[  4] 0x00007fac74d021ea /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02327018
+[  5] 0x00007fac74d05167 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02339175
+[  6] 0x00007fac74d0326f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02331247
+[  7] 0x00007fac74d03ec4 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02334404
+[  8] 0x00007fac74d6130b /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02716427
+[  9] 0x00007fac7597aad9 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_dispatcher.so+00670425 _ZN8Mfh_file11dispatch_fhEiPP11mxArray_tagiS2_+00000697
+[ 10] 0x00007fac74d2a360 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02491232
+[ 11] 0x00007fac74d29329 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02487081
+[ 12] 0x00007fac74c9e456 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+01918038 inCallFcnWithTrap+00000086
+[ 13] 0x00007fac74cf62ab /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+02278059
+[ 14] 0x00007fac74c9fbf6 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwm_interpreter.so+01924086 _Z44inCallFcnWithTrapInDesiredWSAndPublishEventsiPP11mxArray_tagiS1_PKcbP15inWorkSpace_tag+00000102
+[ 15] 0x00007fac7545ce8f /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00614031 _ZN3iqm15BaseFEvalPlugin7executeEP15inWorkSpace_tagRN5boost10shared_ptrIN14cmddistributor17IIPCompletedEventEEE+00000287
+[ 16] 0x00007fac76173689 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwmcr.so+00435849
+[ 17] 0x00007fac75458565 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00595301
+[ 18] 0x00007fac75444ee8 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwiqm.so+00515816
+[ 19] 0x00007fac808dce33 /usr/local/MATLAB/MATLAB_Compiler_Runtime/v83/bin/glnxa64/libmwservices.so+01646131 _ZN10eventqu
